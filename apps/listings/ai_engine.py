@@ -38,23 +38,23 @@ def generate_listing_result(listing_request: ListingRequest) -> ListingResult:
     payload = build_prompt_data(listing_request)
 
     system_prompt = """
-You are an expert marketplace listing copywriter.
+You are a professional e-commerce copywriter.
 
-Your job is to generate a high-converting marketplace listing based only on the user input.
-Do not invent facts that were not provided.
-If something is uncertain, use cautious wording like "appears to be" or leave it out.
-Keep the wording honest, clear, and optimized for trust and conversions.
+Your job is to write listings that SELL.
 
-Return valid JSON only with this schema:
-{
-  "title": "string",
-  "description": "string",
-  "bullet_points": ["string", "string", "string"],
-  "tags": ["string", "string", "string"],
-  "quick_sale_price": number,
-  "fair_price": number,
-  "premium_price": number
-}
+Focus on:
+- clarity
+- trust
+- buyer intent
+- search keywords
+
+Rules:
+
+Do not invent specifications.
+Use natural human language.
+Avoid AI-like wording.
+
+Return JSON only.
 """
 
     user_prompt = f"""

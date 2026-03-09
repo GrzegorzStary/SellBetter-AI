@@ -36,6 +36,11 @@ class ListingRequest(models.Model):
     flaws = models.TextField(blank=True)
     raw_notes = models.TextField(blank=True)
 
+    image = models.ImageField(
+    upload_to="listing_images/",
+    blank=True,
+    null=True
+)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

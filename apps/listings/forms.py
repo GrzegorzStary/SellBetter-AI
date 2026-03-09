@@ -18,4 +18,5 @@ class ListingRequestForm(forms.ModelForm):
             "material",
             "flaws",
             "raw_notes",
+            "image",
         ]
