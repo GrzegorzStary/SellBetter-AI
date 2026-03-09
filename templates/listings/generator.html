@@ -1,0 +1,29 @@
+<h1>AI Listing Generator</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Generate Listing</button>
+</form>
+
+{% if result %}
+
+<hr>
+
+<h2>{{ result.title }}</h2>
+
+<p>{{ result.description }}</p>
+
+<h3>Bullet Points</h3>
+<pre>{{ result.bullet_points }}</pre>
+
+<h3>Tags</h3>
+<p>{{ result.tags }}</p>
+
+<h3>Suggested Prices</h3>
+
+<p>Quick Sale: {{ result.quick_sale_price }}</p>
+<p>Fair Price: {{ result.fair_price }}</p>
+<p>Premium Price: {{ result.premium_price }}</p>
+
+{% endif %}
