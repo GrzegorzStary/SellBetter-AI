@@ -1,9 +1,9 @@
 import json
+import mimetypes
+import base64
 from decimal import Decimal, InvalidOperation
-
 from django.conf import settings
 from openai import OpenAI
-
 from .models import ListingRequest, ListingResult
 
 
@@ -31,6 +31,49 @@ def build_prompt_data(listing_request: ListingRequest) -> dict:
         "raw_notes": listing_request.raw_notes or "",
     }
 
+def detect_product_from_image(image_file):
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+    mime_type = image_file.content_type or "image/jpeg"
+    encoded = base64.b64encode(image_file.read()).decode("utf-8")
+
+    response = client.responses.create(
+        model="gpt-5-mini",
+        input=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": """
+Identify the object in this image and return valid JSON only.
+
+Schema:
+{
+  "item_name": "",
+  "category": "",
+  "color": "",
+  "material": "",
+  "raw_notes": ""
+}
+
+Rules:
+- Be cautious
+- Do not invent brand names
+- If uncertain, use broad categories
+- Keep raw_notes short and useful
+"""
+                    },
+                    {
+                        "type": "input_image",
+                        "image_url": f"data:{mime_type};base64,{encoded}"
+                    }
+                ]
+            }
+        ]
+    )
+
+    return json.loads(response.output_text)
 
 def generate_listing_result(listing_request: ListingRequest) -> ListingResult:
     client = OpenAI(api_key=settings.OPENAI_API_KEY)

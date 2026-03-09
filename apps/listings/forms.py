@@ -20,3 +20,6 @@ class ListingRequestForm(forms.ModelForm):
             "raw_notes",
             "image",
         ]
+        
+class ImageAnalysisForm(forms.Form):
+    image = forms.ImageField()
