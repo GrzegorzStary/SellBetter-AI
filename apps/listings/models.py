@@ -42,7 +42,6 @@ class ListingRequest(models.Model):
         return f"{self.item_name} ({self.platform})"
     
 class ListingResult(models.Model):
-
     request = models.ForeignKey(
         ListingRequest,
         on_delete=models.CASCADE,
@@ -50,15 +49,9 @@ class ListingResult(models.Model):
     )
 
     title = models.CharField(max_length=255)
-
     description = models.TextField()
-
     bullet_points = models.TextField()
-
-    tags = models.CharField(
-        max_length=255,
-        blank=True
-    )
+    tags = models.CharField(max_length=255, blank=True)
 
     quick_sale_price = models.DecimalField(
         max_digits=10,
@@ -66,14 +59,12 @@ class ListingResult(models.Model):
         null=True,
         blank=True
     )
-
     fair_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True
     )
-
     premium_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -81,9 +72,7 @@ class ListingResult(models.Model):
         blank=True
     )
 
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"AI Result for {self.request.item_name}"
