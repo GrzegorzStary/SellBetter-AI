@@ -1,4 +1,5 @@
 from django import forms
+
 from .models import ListingRequest
 
 
@@ -73,19 +74,39 @@ class ImageAnalysisForm(forms.Form):
         if len(images) > 10:
             raise forms.ValidationError("You can upload a maximum of 10 images.")
 
-        allowed_types = {
+        allowed_content_types = {
             "image/jpeg",
             "image/png",
             "image/webp",
+            "image/heic",
+            "image/heif",
+        }
+
+        allowed_extensions = {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            ".heic",
+            ".heif",
         }
 
         max_size = 10 * 1024 * 1024  # 10MB
 
         for image in images:
+            file_name = (image.name or "").lower()
+            content_type = (image.content_type or "").lower()
 
-            if image.content_type not in allowed_types:
+            extension = ""
+            if "." in file_name:
+                extension = "." + file_name.rsplit(".", 1)[1]
+
+            is_allowed_type = content_type in allowed_content_types
+            is_allowed_extension = extension in allowed_extensions
+
+            if not is_allowed_type and not is_allowed_extension:
                 raise forms.ValidationError(
-                    f"{image.name} is not a supported format. Use JPG, PNG or WEBP."
+                    f"{image.name} is not a supported format. Use JPG, PNG, WEBP or HEIC."
                 )
 
             if image.size > max_size:
