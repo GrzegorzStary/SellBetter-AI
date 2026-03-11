@@ -306,3 +306,14 @@
     font-size: 1.2rem;
     font-weight: 600;
 }
+
+.generator-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.generator-result--inline {
+    margin-top: 24px;
+}

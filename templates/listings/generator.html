@@ -41,7 +41,7 @@
                         id="id_images"
                         class="form-control"
                         multiple
-                        accept=".jpg,.jpeg,.png,.webp,.heic,image/heic,image/jpeg,image/png,image/webp"
+                        accept=".jpg,.jpeg,.png,.webp,.heic,.heif,image/heic,image/heif,image/jpeg,image/png,image/webp"
                     >
                     <small class="form-help">
                         You can upload up to 10 images. Supported formats: JPG, PNG, WEBP, HEIC.
@@ -59,10 +59,72 @@
                 <div id="upload-feedback" class="upload-feedback"></div>
                 <div id="image-preview" class="image-preview-grid"></div>
 
-                <button type="submit" name="analyze_image" class="btn btn-primary">
-                    Analyze Images
-                </button>
+                <div class="generator-actions">
+                    <button type="submit" name="analyze_image" class="btn btn-primary">
+                        Analyze Images
+                    </button>
+
+                    <button type="submit" name="refresh_form" class="btn btn-secondary">
+                        Refresh / Clear
+                    </button>
+                </div>
             </form>
+
+            {% if detected_data %}
+                <section class="generator-result generator-result--inline">
+                    <div class="generator-result__header">
+                        <h2>Analyzed Data</h2>
+                        <p>These details were extracted from the uploaded images.</p>
+                    </div>
+
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Item Name</span>
+                            <span class="result-value">{{ detected_data.item_name|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Category</span>
+                            <span class="result-value">{{ detected_data.category|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Brand</span>
+                            <span class="result-value">{{ detected_data.brand|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Condition</span>
+                            <span class="result-value">{{ detected_data.condition|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Color</span>
+                            <span class="result-value">{{ detected_data.color|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Material</span>
+                            <span class="result-value">{{ detected_data.material|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Size Details</span>
+                            <span class="result-value">{{ detected_data.size_details|default:"-" }}</span>
+                        </div>
+
+                        <div class="result-item">
+                            <span class="result-label">Flaws</span>
+                            <span class="result-value">{{ detected_data.flaws|default:"-" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-notes">
+                        <h3>Raw Notes</h3>
+                        <p>{{ detected_data.raw_notes|default:"No notes available." }}</p>
+                    </div>
+                </section>
+            {% endif %}
         </div>
 
         <div class="generator-card">
@@ -85,70 +147,20 @@
                     {{ form.as_p }}
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Generate Listing
-                </button>
+                <div class="generator-actions">
+                    <button type="submit" class="btn btn-primary">
+                        Generate Listing
+                    </button>
+
+                    <button type="submit" name="refresh_form" class="btn btn-secondary">
+                        Refresh / Clear
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
     <div id="form-status" class="form-status" style="display: none;"></div>
-
-    {% if detected_data %}
-        <section class="generator-result">
-            <div class="generator-result__header">
-                <h2>Detected Data</h2>
-                <p>AI extracted these details from the uploaded images.</p>
-            </div>
-
-            <div class="result-grid">
-                <div class="result-item">
-                    <span class="result-label">Item Name</span>
-                    <span class="result-value">{{ detected_data.item_name|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Category</span>
-                    <span class="result-value">{{ detected_data.category|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Brand</span>
-                    <span class="result-value">{{ detected_data.brand|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Condition</span>
-                    <span class="result-value">{{ detected_data.condition|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Color</span>
-                    <span class="result-value">{{ detected_data.color|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Material</span>
-                    <span class="result-value">{{ detected_data.material|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Size Details</span>
-                    <span class="result-value">{{ detected_data.size_details|default:"-" }}</span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">Flaws</span>
-                    <span class="result-value">{{ detected_data.flaws|default:"-" }}</span>
-                </div>
-            </div>
-
-            <div class="result-notes">
-                <h3>Raw Notes</h3>
-                <p>{{ detected_data.raw_notes|default:"No notes available." }}</p>
-            </div>
-        </section>
-    {% endif %}
 
     {% if result %}
         <section class="generator-result">
@@ -206,33 +218,21 @@
                     <div class="price-card">
                         <span class="price-card__label">Quick Sale</span>
                         <span class="price-card__value">
-                            {% if result.quick_sale_price %}
-                                £{{ result.quick_sale_price }}
-                            {% else %}
-                                -
-                            {% endif %}
+                            {% if result.quick_sale_price %}£{{ result.quick_sale_price }}{% else %}-{% endif %}
                         </span>
                     </div>
 
                     <div class="price-card">
                         <span class="price-card__label">Fair Price</span>
                         <span class="price-card__value">
-                            {% if result.fair_price %}
-                                £{{ result.fair_price }}
-                            {% else %}
-                                -
-                            {% endif %}
+                            {% if result.fair_price %}£{{ result.fair_price }}{% else %}-{% endif %}
                         </span>
                     </div>
 
                     <div class="price-card">
                         <span class="price-card__label">Premium Price</span>
                         <span class="price-card__value">
-                            {% if result.premium_price %}
-                                £{{ result.premium_price }}
-                            {% else %}
-                                -
-                            {% endif %}
+                            {% if result.premium_price %}£{{ result.premium_price }}{% else %}-{% endif %}
                         </span>
                     </div>
                 </div>
@@ -245,11 +245,7 @@
                             <div class="result-item">
                                 <span class="result-label">Comps Count</span>
                                 <span class="result-value">
-                                    {% if result.comps_count %}
-                                        {{ result.comps_count }}
-                                    {% else %}
-                                        0
-                                    {% endif %}
+                                    {% if result.comps_count %}{{ result.comps_count }}{% else %}0{% endif %}
                                 </span>
                             </div>
 
