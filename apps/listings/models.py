@@ -35,6 +35,8 @@ class ListingRequest(models.Model):
     material = models.CharField(max_length=100, blank=True)
     flaws = models.TextField(blank=True)
     raw_notes = models.TextField(blank=True)
+    ebay_comps_summary = models.TextField(blank=True)
+    comps_count = models.PositiveIntegerField(null=True, blank=True)
 
     image = models.ImageField(
     upload_to="listing_images/",
