@@ -6,11 +6,17 @@ from decimal import Decimal, InvalidOperation
 from django.conf import settings
 from openai import OpenAI
 from PIL import Image, UnidentifiedImageError
-
-from .models import ListingRequest, ListingResult
 from pillow_heif import register_heif_opener
 
+from .models import ListingRequest, ListingResult
+from .ebay_service import (
+    search_ebay_comps,
+    estimate_prices_from_comps,
+    format_comps_summary,
+)
+
 register_heif_opener()
+
 
 def _to_decimal(value):
     if value in (None, "", "null"):
@@ -79,7 +85,9 @@ def _normalize_image_for_openai(image_file):
             return "image/jpeg", encoded
 
     except UnidentifiedImageError:
-        raise ValueError(f"{getattr(image_file, 'name', 'Uploaded file')} is not a valid image.")
+        raise ValueError(
+            f"{getattr(image_file, 'name', 'Uploaded file')} is not a valid image."
+        )
     except Exception as exc:
         raise ValueError(
             f"Could not process image {getattr(image_file, 'name', 'uploaded file')}: {exc}"
@@ -284,15 +292,56 @@ Rules:
     bullet_points = "\n".join(str(item) for item in bullet_points_list)
     tags = ", ".join(str(item) for item in tags_list)
 
+    # Build eBay search query from strongest available fields
+    query_parts = [
+        listing_request.brand,
+        listing_request.item_name,
+        listing_request.material,
+        listing_request.color,
+    ]
+    query = " ".join(part.strip() for part in query_parts if part and str(part).strip()).strip()
+
+    comps = []
+    price_data = {
+        "quick_sale_price": None,
+        "fair_price": None,
+        "premium_price": None,
+        "comps_count": 0,
+    }
+    comps_summary = ""
+
+    if query:
+        try:
+            comps = search_ebay_comps(query=query, limit=10)
+            price_data = estimate_prices_from_comps(comps)
+            comps_summary = format_comps_summary(comps)
+        except Exception:
+            # Fallback to model-provided prices if eBay lookup fails
+            price_data = {
+                "quick_sale_price": _to_decimal(data.get("quick_sale_price")),
+                "fair_price": _to_decimal(data.get("fair_price")),
+                "premium_price": _to_decimal(data.get("premium_price")),
+                "comps_count": 0,
+            }
+            comps_summary = ""
+
+    # If no comps found, fall back to model prices
+    if not price_data.get("quick_sale_price") and not price_data.get("fair_price") and not price_data.get("premium_price"):
+        price_data["quick_sale_price"] = _to_decimal(data.get("quick_sale_price"))
+        price_data["fair_price"] = _to_decimal(data.get("fair_price"))
+        price_data["premium_price"] = _to_decimal(data.get("premium_price"))
+
     result = ListingResult.objects.create(
         request=listing_request,
         title=str(data.get("title", ""))[:255],
         description=str(data.get("description", "")),
         bullet_points=bullet_points,
         tags=tags[:255],
-        quick_sale_price=_to_decimal(data.get("quick_sale_price")),
-        fair_price=_to_decimal(data.get("fair_price")),
-        premium_price=_to_decimal(data.get("premium_price")),
+        quick_sale_price=_to_decimal(price_data.get("quick_sale_price")),
+        fair_price=_to_decimal(price_data.get("fair_price")),
+        premium_price=_to_decimal(price_data.get("premium_price")),
+        comps_count=price_data.get("comps_count") or 0,
+        ebay_comps_summary=comps_summary,
     )
 
     return result

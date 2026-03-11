@@ -152,54 +152,127 @@
 
     {% if result %}
         <section class="generator-result">
-            <div class="generator-result__header">
-                <h2>Generated Listing</h2>
-                <p>Your AI-generated listing output.</p>
+            <div class="generator-result__header generator-result__header--actions">
+                <div>
+                    <h2>Generated Listing</h2>
+                    <p>Your AI-generated listing output.</p>
+                </div>
+
+                <div class="generator-result__actions">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="copy-title-btn"
+                    >
+                        Copy Title
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="copy-listing-btn"
+                    >
+                        Copy Listing
+                    </button>
+                </div>
             </div>
 
             <div class="listing-output">
                 <div class="listing-output__block">
                     <h3>Title</h3>
-                    <p>{{ result.title }}</p>
+                    <p id="listing-title">{{ result.title|default:"-" }}</p>
                 </div>
 
                 <div class="listing-output__block">
                     <h3>Description</h3>
-                    <p>{{ result.description|linebreaksbr }}</p>
+                    <div id="listing-description">
+                        <p>{{ result.description|default:"-"|linebreaksbr }}</p>
+                    </div>
                 </div>
 
                 <div class="listing-output__block">
                     <h3>Bullet Points</h3>
-                    <p>{{ result.bullet_points|linebreaksbr }}</p>
+                    <div id="listing-bullets">
+                        <p>{{ result.bullet_points|default:"-"|linebreaksbr }}</p>
+                    </div>
                 </div>
 
                 <div class="listing-output__block">
                     <h3>Tags</h3>
-                    <p>{{ result.tags }}</p>
+                    <p id="listing-tags">{{ result.tags|default:"-" }}</p>
                 </div>
 
                 <div class="listing-output__prices">
                     <div class="price-card">
                         <span class="price-card__label">Quick Sale</span>
                         <span class="price-card__value">
-                            {% if result.quick_sale_price %}£{{ result.quick_sale_price }}{% else %}-{% endif %}
+                            {% if result.quick_sale_price %}
+                                £{{ result.quick_sale_price }}
+                            {% else %}
+                                -
+                            {% endif %}
                         </span>
                     </div>
 
                     <div class="price-card">
                         <span class="price-card__label">Fair Price</span>
                         <span class="price-card__value">
-                            {% if result.fair_price %}£{{ result.fair_price }}{% else %}-{% endif %}
+                            {% if result.fair_price %}
+                                £{{ result.fair_price }}
+                            {% else %}
+                                -
+                            {% endif %}
                         </span>
                     </div>
 
                     <div class="price-card">
                         <span class="price-card__label">Premium Price</span>
                         <span class="price-card__value">
-                            {% if result.premium_price %}£{{ result.premium_price }}{% else %}-{% endif %}
+                            {% if result.premium_price %}
+                                £{{ result.premium_price }}
+                            {% else %}
+                                -
+                            {% endif %}
                         </span>
                     </div>
                 </div>
+
+                {% if result.comps_count or result.ebay_comps_summary %}
+                    <div class="listing-output__block">
+                        <h3>eBay Price Comps</h3>
+
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="result-label">Comps Count</span>
+                                <span class="result-value">
+                                    {% if result.comps_count %}
+                                        {{ result.comps_count }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="result-item">
+                                <span class="result-label">Pricing Source</span>
+                                <span class="result-value">
+                                    {% if result.ebay_comps_summary %}
+                                        eBay market comps
+                                    {% else %}
+                                        AI estimate fallback
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        {% if result.ebay_comps_summary %}
+                            <div class="result-notes">
+                                <h3>Comp Summary</h3>
+                                <pre class="listing-output__pre">{{ result.ebay_comps_summary }}</pre>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
         </section>
     {% endif %}

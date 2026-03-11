@@ -135,3 +135,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# EBAY PRICE ESTIMATION
+
+EBAY_CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
+EBAY_CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
+EBAY_MARKETPLACE_ID = os.getenv("EBAY_MARKETPLACE_ID", "EBAY_GB")
