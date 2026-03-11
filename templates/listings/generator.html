@@ -9,40 +9,199 @@
 
 {% block content %}
 <section class="generator-page">
-    <h1 class="generator-page__title">Listing Generator</h1>
+    <header class="generator-page__header">
+        <h1 class="generator-page__title">Listing Generator</h1>
+        <p class="generator-page__subtitle">
+            Upload up to 10 photos for more accurate AI analysis, then generate a stronger marketplace listing.
+        </p>
+    </header>
 
     <div class="generator-grid">
         <div class="generator-card">
-            <h2>Analyze Image</h2>
-            <form method="post" enctype="multipart/form-data">
+            <div class="generator-card__header">
+                <h2>Analyze Images</h2>
+                <p class="generator-card__text">
+                    Add multiple angles, details, labels, flaws, and close-ups to improve recognition quality.
+                </p>
+            </div>
+
+            <form
+                id="analyze-form"
+                method="post"
+                enctype="multipart/form-data"
+                class="generator-form"
+            >
                 {% csrf_token %}
-                {{ image_form.as_p }}
-                <button type="submit" name="analyze_image">Analyze Image</button>
+
+                <div class="form-group">
+                    <label for="id_images" class="form-label">Upload Images</label>
+                    <input
+                        type="file"
+                        name="images"
+                        id="id_images"
+                        class="form-control"
+                        multiple
+                        accept=".jpg,.jpeg,.png,.webp,.heic,image/heic,image/jpeg,image/png,image/webp"
+                    >
+                    <small class="form-help">
+                        You can upload up to 10 images. Supported formats: JPG, PNG, WEBP, HEIC.
+                    </small>
+                </div>
+
+                {% if image_form.images.errors %}
+                    <div class="form-errors">
+                        {% for error in image_form.images.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div id="upload-feedback" class="upload-feedback"></div>
+                <div id="image-preview" class="image-preview-grid"></div>
+
+                <button type="submit" name="analyze_image" class="btn btn-primary">
+                    Analyze Images
+                </button>
             </form>
         </div>
 
         <div class="generator-card">
-            <h2>Generate Listing</h2>
-            <form method="post" enctype="multipart/form-data">
+            <div class="generator-card__header">
+                <h2>Generate Listing</h2>
+                <p class="generator-card__text">
+                    Review the detected details and generate a title, description, tags, and pricing suggestions.
+                </p>
+            </div>
+
+            <form
+                id="generate-form"
+                method="post"
+                enctype="multipart/form-data"
+                class="generator-form"
+            >
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Generate Listing</button>
+
+                <div class="form-fields">
+                    {{ form.as_p }}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Generate Listing
+                </button>
             </form>
         </div>
     </div>
 
+    <div id="form-status" class="form-status" style="display: none;"></div>
+
     {% if detected_data %}
-    <div class="generator-result">
-        <h2>Detected Data</h2>
-        <pre>{{ detected_data }}</pre>
-    </div>
+        <section class="generator-result">
+            <div class="generator-result__header">
+                <h2>Detected Data</h2>
+                <p>AI extracted these details from the uploaded images.</p>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-item">
+                    <span class="result-label">Item Name</span>
+                    <span class="result-value">{{ detected_data.item_name|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Category</span>
+                    <span class="result-value">{{ detected_data.category|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Brand</span>
+                    <span class="result-value">{{ detected_data.brand|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Condition</span>
+                    <span class="result-value">{{ detected_data.condition|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Color</span>
+                    <span class="result-value">{{ detected_data.color|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Material</span>
+                    <span class="result-value">{{ detected_data.material|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Size Details</span>
+                    <span class="result-value">{{ detected_data.size_details|default:"-" }}</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">Flaws</span>
+                    <span class="result-value">{{ detected_data.flaws|default:"-" }}</span>
+                </div>
+            </div>
+
+            <div class="result-notes">
+                <h3>Raw Notes</h3>
+                <p>{{ detected_data.raw_notes|default:"No notes available." }}</p>
+            </div>
+        </section>
     {% endif %}
 
     {% if result %}
-    <div class="generator-result">
-        <h2>Generated Listing</h2>
-        <pre>{{ result }}</pre>
-    </div>
+        <section class="generator-result">
+            <div class="generator-result__header">
+                <h2>Generated Listing</h2>
+                <p>Your AI-generated listing output.</p>
+            </div>
+
+            <div class="listing-output">
+                <div class="listing-output__block">
+                    <h3>Title</h3>
+                    <p>{{ result.title }}</p>
+                </div>
+
+                <div class="listing-output__block">
+                    <h3>Description</h3>
+                    <p>{{ result.description|linebreaksbr }}</p>
+                </div>
+
+                <div class="listing-output__block">
+                    <h3>Bullet Points</h3>
+                    <p>{{ result.bullet_points|linebreaksbr }}</p>
+                </div>
+
+                <div class="listing-output__block">
+                    <h3>Tags</h3>
+                    <p>{{ result.tags }}</p>
+                </div>
+
+                <div class="listing-output__prices">
+                    <div class="price-card">
+                        <span class="price-card__label">Quick Sale</span>
+                        <span class="price-card__value">
+                            {% if result.quick_sale_price %}£{{ result.quick_sale_price }}{% else %}-{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="price-card">
+                        <span class="price-card__label">Fair Price</span>
+                        <span class="price-card__value">
+                            {% if result.fair_price %}£{{ result.fair_price }}{% else %}-{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="price-card">
+                        <span class="price-card__label">Premium Price</span>
+                        <span class="price-card__value">
+                            {% if result.premium_price %}£{{ result.premium_price }}{% else %}-{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
     {% endif %}
 </section>
 {% endblock %}
