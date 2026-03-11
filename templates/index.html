@@ -1,23 +1,35 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block title %}Home | AI Listing Generator{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'assets/css/index.css' %}">
-{% endblock %}
-
 {% block content %}
-<section class="hero">
-    <div class="hero__content">
-        <h1 class="hero__title">Generate Better Listings Faster</h1>
-        <p class="hero__subtitle">
-            Upload a product image, detect item details, and create a ready-to-use marketplace listing.
-        </p>
-        <a href="{% url 'generate' %}" class="hero__button">Start Now</a>
-    </div>
-    <div class="bg-blue-500 text-white p-10 text-center text-2xl">
-        Tailwind działa 🚀
+<section class="py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+
+        <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+
+            <div>
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                    Generate Better Listings Faster
+                </h1>
+
+                <p class="mt-6 text-lg text-gray-600">
+                    Upload a product image, detect item details, and create a ready-to-use marketplace listing in seconds.
+                </p>
+
+                <div class="mt-8 flex gap-4">
+                    <a href="{% url 'generate' %}" class="btn-primary">
+                        Start Now
+                    </a>
+
+                    <a href="#" class="btn-secondary">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 </section>
 {% endblock %}

@@ -1,10 +1,21 @@
-<nav class="navbar">
-    <div class="navbar__container">
-        <a href="{% url 'home' %}" class="navbar__brand">AI Listing Generator</a>
+<nav class="border-b border-gray-200 bg-white">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
 
-        <div class="navbar__menu">
-            <a href="{% url 'home' %}" class="navbar__link">Home</a>
-            <a href="{% url 'generate' %}" class="navbar__link">Generator</a>
+            <a href="{% url 'home' %}" class="text-lg font-bold text-gray-900">
+                AI Listing Generator
+            </a>
+
+            <div class="flex items-center gap-6">
+                <a href="{% url 'home' %}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Home
+                </a>
+
+                <a href="{% url 'generate' %}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Generator
+                </a>
+            </div>
+
         </div>
     </div>
 </nav>
