@@ -82,6 +82,18 @@ document.addEventListener("DOMContentLoaded", function () {
         return fileName.slice(lastDot).toLowerCase();
     }
 
+    function isHeicLike(file) {
+        const mimeType = (file.type || "").toLowerCase();
+        const extension = getFileExtension(file.name || "");
+
+        return (
+            mimeType === "image/heic" ||
+            mimeType === "image/heif" ||
+            extension === ".heic" ||
+            extension === ".heif"
+        );
+    }
+
     function isAllowedFile(file) {
         const mimeType = (file.type || "").toLowerCase();
         const extension = getFileExtension(file.name || "");
@@ -115,9 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return { validFiles, errors };
     }
 
-    function createPreview(file, index) {
-        if (!previewBox) return;
-
+    function buildPreviewCard(fileName, index) {
         const card = document.createElement("div");
         card.className = "image-preview-card";
 
@@ -127,49 +137,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const meta = document.createElement("div");
         meta.className = "image-preview-card__caption";
-        meta.textContent = file.name;
+        meta.textContent = fileName;
 
         card.appendChild(image);
         card.appendChild(meta);
-        previewBox.appendChild(card);
 
-        const extension = getFileExtension(file.name || "");
-        const mimeType = (file.type || "").toLowerCase();
-
-        const isHeicLike =
-            mimeType === "image/heic" ||
-            mimeType === "image/heif" ||
-            extension === ".heic" ||
-            extension === ".heif";
-
-        if (isHeicLike) {
-            image.alt = `HEIC preview ${index + 1}`;
-            image.style.display = "none";
-
-            const placeholder = document.createElement("div");
-            placeholder.className = "image-preview-card__placeholder";
-            placeholder.textContent = "HEIC preview unavailable in browser";
-            card.insertBefore(placeholder, meta);
-
-            return;
+        if (previewBox) {
+            previewBox.appendChild(card);
         }
 
-        const reader = new FileReader();
+        return { card, image, meta };
+    }
 
-        reader.onload = function (e) {
-            image.src = e.target.result;
-        };
+    async function createPreview(file, index) {
+        if (!previewBox) return;
 
-        reader.onerror = function () {
+        const { card, image } = buildPreviewCard(file.name, index);
+
+        try {
+            if (isHeicLike(file)) {
+                if (typeof HeicTo === "undefined") {
+                    throw new Error("HEIC converter library is not loaded.");
+                }
+
+                const jpegBlob = await HeicTo({
+                    blob: file,
+                    type: "image/jpeg",
+                    quality: 0.85,
+                });
+
+                const previewUrl = URL.createObjectURL(jpegBlob);
+                image.src = previewUrl;
+                image.dataset.objectUrl = previewUrl;
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                image.src = e.target.result;
+            };
+
+            reader.onerror = function () {
+                throw new Error("Preview unavailable.");
+            };
+
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error(`Preview failed for ${file.name}:`, error);
+
             image.remove();
 
             const placeholder = document.createElement("div");
             placeholder.className = "image-preview-card__placeholder";
             placeholder.textContent = "Preview unavailable";
-            card.insertBefore(placeholder, meta);
-        };
-
-        reader.readAsDataURL(file);
+            card.insertBefore(placeholder, card.firstChild);
+        }
     }
 
     function getTextContent(id) {
@@ -202,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (imageInput) {
-        imageInput.addEventListener("change", function () {
+        imageInput.addEventListener("change", async function () {
             hideStatus();
             clearFeedback();
             clearPreview();
@@ -233,9 +256,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
             }
 
-            validFiles.forEach((file, index) => {
-                createPreview(file, index);
-            });
+            await Promise.all(
+                validFiles.map((file, index) => createPreview(file, index))
+            );
         });
     }
 
