@@ -4,6 +4,10 @@ from .forms import ListingRequestForm, ImageAnalysisForm
 from .ai_engine import generate_listing_result, detect_product_from_image
 
 
+def index_view(request):
+    return render(request, "index.html")
+
+
 def generate_listing_view(request):
     result = None
     detected_data = None

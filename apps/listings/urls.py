@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import generate_listing_view
-
+from .views import index_view, generate_listing_view
 
 urlpatterns = [
-    path("generate/", generate_listing_view, name="generate_listing"),
+    path("", index_view, name="home"),
+    path("generate/", generate_listing_view, name="generate"),
 ]

@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Listing Generator{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/footer.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include "includes/navbar.html" %}
+
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "includes/footer.html" %}
+
+    <script src="{% static 'assets/js/base.js' %}"></script>
+    <script src="{% static 'assets/js/navbar.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

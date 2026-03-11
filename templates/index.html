@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home | AI Listing Generator{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero__content">
+        <h1 class="hero__title">Generate Better Listings Faster</h1>
+        <p class="hero__subtitle">
+            Upload a product image, detect item details, and create a ready-to-use marketplace listing.
+        </p>
+        <a href="{% url 'generate' %}" class="hero__button">Start Now</a>
+    </div>
+</section>
+{% endblock %}

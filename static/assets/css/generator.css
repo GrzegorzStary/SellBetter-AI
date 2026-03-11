@@ -1,0 +1,44 @@
+.generator-page__title {
+    margin-bottom: 24px;
+    font-size: 2rem;
+}
+
+.generator-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.generator-card,
+.generator-result {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.generator-card h2,
+.generator-result h2 {
+    margin-bottom: 16px;
+}
+
+.generator-card form p {
+    margin-bottom: 14px;
+}
+
+.generator-card button {
+    border: none;
+    background: #2563eb;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 8px;
+}
+
+.generator-result {
+    margin-top: 24px;
+}
+
+.generator-result pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
