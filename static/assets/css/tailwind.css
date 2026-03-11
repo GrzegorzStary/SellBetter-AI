@@ -1,1 +1,54 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand-500: oklch(0.62 0.19 255);
+  --color-brand-600: oklch(0.54 0.21 255);
+}
+
+@utility app-container {
+  @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 font-medium transition;
+}
+
+.btn-primary {
+  @apply btn bg-black text-white hover:opacity-90;
+}
+
+.btn-secondary {
+  @apply btn border border-gray-300 bg-white text-gray-800 hover:bg-gray-50;
+}
+
+.card {
+  @apply rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200;
+}
+
+.label {
+  @apply mb-2 block text-sm font-medium text-gray-700;
+}
+
+.input {
+  @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition;
+}
+
+.input:focus {
+  @apply border-gray-400 ring-2 ring-gray-200;
+}
+
+.select {
+  @apply w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition;
+}
+
+.textarea {
+  @apply min-h-32 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition;
+}
+
+.section-title {
+  @apply text-3xl font-bold tracking-tight text-gray-900;
+}
+
+.section-subtitle {
+  @apply mt-3 text-gray-600;
+}
